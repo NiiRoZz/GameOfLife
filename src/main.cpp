@@ -4,6 +4,7 @@
 #include <gf/RenderWindow.h>
 #include <gf/Event.h>
 #include <Pomme/VirtualMachine.h>
+#include <Pomme/Compiler.h>
 
 int main(int , char const **)
 {
@@ -12,7 +13,15 @@ int main(int , char const **)
 
     renderer.clear(gf::Color::Black);
 
-    Pomme::VirtualMachine pommeVm;
+    Pomme::VirtualMachine vm;
+    Pomme::Compiler compiler(vm);
+    compiler.addStdLibrary();
+
+    vm.interpret(compiler.compile());
+    if (!vm.linkStdNative())
+    {
+        return -1;
+    }
 
     while (window.isOpen())
     {
