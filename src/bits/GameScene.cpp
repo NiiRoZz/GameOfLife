@@ -7,7 +7,10 @@ namespace gol
     GameScene::GameScene(GameHub& game)
     : gf::Scene(game.getRenderer().getSize())
     , m_game(game)
+    , instanceGameScene(nullptr)
     {
+        game.getWindow().setFramerateLimit(1u);
+
         setClearColor(gf::Color::Black);
 
         for(int x = 0; x < WIDTH; x++)
@@ -23,15 +26,6 @@ namespace gol
         setCell(6,5,true);
 
         display();
-
-        for(int i = 0; i < 3; i++)
-        {
-            updateMatrix();
-            display();
-            std::cout << std::endl;
-            std::cout << std::endl;
-            std::cout << std::endl;
-        }
     }
 
     bool GameScene::getCell(int x, int y)
@@ -40,6 +34,7 @@ namespace gol
         {
             return matrix[x][y];
         }
+
         return false;
     }
 
@@ -51,16 +46,6 @@ namespace gol
         }
     }
 
-
-    bool GameScene::getCellNext(int x, int y)
-    {
-        if(x >= 0 && x < WIDTH && y >= 0 && y < LENGTH)
-        {
-            return matrixNextCycle[x][y];
-        }
-        return false;
-    }
-
     void GameScene::setCellNext(int x, int y, bool alive)
     {
         if (x >= 0 && x < WIDTH && y >= 0 && y < LENGTH)
@@ -69,49 +54,19 @@ namespace gol
         }
     }
 
-    int GameScene::nbAliveNeighbor(int x, int y)
+    void GameScene::makeIteration()
     {
-        int nbAliveNeighbor = 0;
-
-        nbAliveNeighbor += getCell(x+1,y+1);
-        nbAliveNeighbor += getCell(x+1,y-1);
-        nbAliveNeighbor += getCell(x-1,y+1);
-        nbAliveNeighbor += getCell(x-1,y-1);
-
-        nbAliveNeighbor += getCell(x,y-1);
-        nbAliveNeighbor += getCell(x,y+1);
-        nbAliveNeighbor += getCell(x+1,y);
-        nbAliveNeighbor += getCell(x-1,y);
-
-        return nbAliveNeighbor;
-    }
-
-    bool GameScene::isAliveNextCycle(int x, int y)
-    {
-        return (nbAliveNeighbor(x,y) == 3 || (getCell(x,y) && nbAliveNeighbor(x,y) == 2));
-    }
-
-    void GameScene::updateMatrix()
-    {
-        for(int x = 0; x < WIDTH; x++)
+        for(int x = 0; x < WIDTH; ++x)
         {
-            for(int y = 0; y < LENGTH; y++)
+            for(int y = 0; y < LENGTH; ++y)
             {
-                setCellNext(x,y, isAliveNextCycle(x,y));
-            }
-        }
-
-        for(int x = 0; x < WIDTH; x++)
-        {
-            for(int y = 0; y < LENGTH; y++)
-            {
-
                 matrix[x][y] = matrixNextCycle[x][y];
             }
         }
     }
 
-    void GameScene::display() {
+    void GameScene::display()
+    {
         for (int x = 0; x < WIDTH; x++)
         {
             for (int y = 0; y < LENGTH; y++)
@@ -120,5 +75,43 @@ namespace gol
             }
             std::cout << "" << std::endl;
         }
+    }
+
+    void GameScene::doUpdate(gf::Time time)
+    {
+        m_game.vm.interpretMethodFunction(instanceGameScene, m_game.vm.getFunctionName("update"), {});
+    }
+
+    void GameScene::doShow()
+    {
+        instanceGameScene = m_game.vm.newInstance("GameScene");
+
+        instanceGameScene->linkMethodNative(m_game.vm, m_game.vm.getFunctionName("getCell", "int", "int"), [&] (Pomme::VirtualMachine& vm, int argCount, Pomme::ObjInstance* instance, Pomme::Value* args) {
+            int x = AS_INT(args[0]);
+            int y = AS_INT(args[1]);
+
+            return BOOL_VAL(getCell(x, y));
+        });
+
+        instanceGameScene->linkMethodNative(m_game.vm, m_game.vm.getFunctionName("setNextCell", "int", "int", "bool"), [&] (Pomme::VirtualMachine& vm, int argCount, Pomme::ObjInstance* instance, Pomme::Value* args) {
+            int x = AS_INT(args[0]);
+            int y = AS_INT(args[1]);
+            bool alive = AS_BOOL(args[2]);
+
+            setCellNext(x, y, alive);
+
+            return NULL_VAL;
+        });
+
+        instanceGameScene->linkMethodNative(m_game.vm, m_game.vm.getFunctionName("makeIteration"), [&] (Pomme::VirtualMachine& vm, int argCount, Pomme::ObjInstance* instance, Pomme::Value* args) {
+            display();
+
+            makeIteration();
+
+            display();
+            std::cout << std::endl << std::endl;
+            
+            return NULL_VAL;
+        });
     }
 }

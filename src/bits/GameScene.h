@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gf/Scene.h>
+#include <Pomme/Object.h>
 
 #define LENGTH      20
 #define WIDTH       20
@@ -17,18 +18,21 @@ namespace gol
         bool getCell(int x, int y);
         void setCell(int x, int y, bool alive);
 
-        bool getCellNext(int x, int y);
         void setCellNext(int x, int y, bool alive);
 
-        bool isAliveNextCycle(int x, int y);
-        int nbAliveNeighbor(int x, int y);
-        void updateMatrix();
+        void makeIteration();
 
         void display();
+
+    protected:
+        virtual void doUpdate(gf::Time time) override;
+        virtual void doShow() override;
 
     private:
         GameHub& m_game;
         bool matrix[LENGTH][WIDTH];
         bool matrixNextCycle[LENGTH][WIDTH];
+
+        Pomme::ObjInstance* instanceGameScene;
     };
 }

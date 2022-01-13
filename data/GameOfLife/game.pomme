@@ -1,1 +1,90 @@
- 
+class GameScene
+{
+    //get current iteration cell
+    native bool getCell(int x, int y);
+
+    //set next iteration cell
+    native void setNextCell(int x, int y, bool alive);
+
+    //switch the next to become current generation
+    native void makeIteration();
+
+    int nbAliveNeighbor(int x, int y)
+    {
+        int nbAliveNeighbor = 0;
+
+        if (getCell(x+1,y+1))
+        {
+            nbAliveNeighbor = nbAliveNeighbor + 1;
+        };
+
+        if (getCell(x+1,y-1))
+        {
+            nbAliveNeighbor = nbAliveNeighbor + 1;
+        };
+
+        if (getCell(x-1,y+1))
+        {
+            nbAliveNeighbor = nbAliveNeighbor + 1;
+        };
+
+        if (getCell(x-1,y-1))
+        {
+            nbAliveNeighbor = nbAliveNeighbor + 1;
+        };
+
+        if (getCell(x,y-1))
+        {
+            nbAliveNeighbor = nbAliveNeighbor + 1;
+        };
+
+        if (getCell(x,y+1))
+        {
+            nbAliveNeighbor = nbAliveNeighbor + 1;
+        };
+
+        if (getCell(x+1,y))
+        {
+            nbAliveNeighbor = nbAliveNeighbor + 1;
+        };
+
+        if (getCell(x-1,y))
+        {
+            nbAliveNeighbor = nbAliveNeighbor + 1;
+        };
+
+        return nbAliveNeighbor;
+    };
+
+    bool isAliveNextCycle(int x, int y)
+    {
+        print(nbAliveNeighbor(x,y));
+        return ((nbAliveNeighbor(x,y) == 3) || (getCell(x,y) && (nbAliveNeighbor(x,y) == 2)));
+    };
+
+    void update()
+    {
+        int x = 1;
+        int y = 1;
+
+        while (x < 19)
+        {
+            y = 1;
+
+            while (y < 19)
+            {
+                setNextCell(x, y, isAliveNextCycle(x, y));
+
+                print(y);
+
+                y = y + 1;
+            };
+
+            print(x);
+
+            x = x + 1;
+        };
+
+        makeIteration();
+    };
+};
