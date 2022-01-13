@@ -75,12 +75,8 @@ class GameScene
             {
                 setNextCell(x, y, isAliveNextCycle(x, y));
 
-                print(y);
-
                 y = y + 1;
             };
-
-            print(x);
 
             x = x + 1;
         };
