@@ -8,24 +8,23 @@ namespace gol
     : gf::Scene(game.getRenderer().getSize())
     , m_game(game)
     , instanceGameScene(nullptr)
+    , m_grid(*this, game.resources)
     {
-        game.getWindow().setFramerateLimit(1u);
+        game.getWindow().setFramerateLimit(2u);
+        game.getWindow().setVerticalSyncEnabled(false);
 
         setClearColor(gf::Color::Black);
 
-        for(int x = 0; x < WIDTH; x++)
-        {
-            for (int y = 0; y < LENGTH; y++)
-            {
-                setCell(x,y,false);
-            }
-        }
+        std::memset(matrix, 0, WIDTH * LENGTH);
+        std::memset(matrixNextCycle, 0, WIDTH * LENGTH);
 
-        setCell(4,5,true);
-        setCell(5,5,true);
-        setCell(6,5,true);
+        matrix[3][1]=true;
+        matrix[4][2]=true;
+        matrix[4][3]=true;
+        matrix[3][3]=true;
+        matrix[2][3]=true;
 
-        display();
+        addHudEntity(m_grid);
     }
 
     bool GameScene::getCell(int x, int y)
@@ -65,25 +64,17 @@ namespace gol
         }
     }
 
-    void GameScene::display()
-    {
-        for (int x = 0; x < WIDTH; x++)
-        {
-            for (int y = 0; y < LENGTH; y++)
-            {
-                std::cout << getCell(x,y);
-            }
-            std::cout << "" << std::endl;
-        }
-    }
-
     void GameScene::doUpdate(gf::Time time)
     {
+        gf::Scene::doUpdate(time);
+
         m_game.vm.interpretMethodFunction(instanceGameScene, m_game.vm.getFunctionName("update"), {});
     }
 
     void GameScene::doShow()
     {
+        gf::Scene::doShow();
+
         instanceGameScene = m_game.vm.newInstance("GameScene");
 
         instanceGameScene->linkMethodNative(m_game.vm, m_game.vm.getFunctionName("getCell", "int", "int"), [&] (Pomme::VirtualMachine& vm, int argCount, Pomme::ObjInstance* instance, Pomme::Value* args) {
@@ -104,12 +95,7 @@ namespace gol
         });
 
         instanceGameScene->linkMethodNative(m_game.vm, m_game.vm.getFunctionName("makeIteration"), [&] (Pomme::VirtualMachine& vm, int argCount, Pomme::ObjInstance* instance, Pomme::Value* args) {
-            display();
-
             makeIteration();
-
-            display();
-            std::cout << std::endl << std::endl;
             
             return NULL_VAL;
         });

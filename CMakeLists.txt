@@ -26,6 +26,7 @@ add_executable(${GAME}
   src/main.cpp
   src/bits/GameHub.cpp
   src/bits/GameScene.cpp
+  src/bits/GridEntity.cpp
 )
 
 target_include_directories(${GAME}

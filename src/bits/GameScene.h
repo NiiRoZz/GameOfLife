@@ -1,10 +1,11 @@
 #pragma once
 
 #include <gf/Scene.h>
+#include <gf/RenderTarget.h>
+#include <gf/RenderStates.h>
 #include <Pomme/Object.h>
 
-#define LENGTH      20
-#define WIDTH       20
+#include "GridEntity.h"
 
 namespace gol
 {
@@ -12,6 +13,10 @@ namespace gol
 
     class GameScene : public gf::Scene
     {
+    public:
+        static constexpr std::size_t WIDTH = 20u;
+        static constexpr std::size_t LENGTH = 20u;
+
     public:
         GameScene(GameHub& game);
 
@@ -21,8 +26,6 @@ namespace gol
         void setCellNext(int x, int y, bool alive);
 
         void makeIteration();
-
-        void display();
 
     protected:
         virtual void doUpdate(gf::Time time) override;
@@ -34,5 +37,7 @@ namespace gol
         bool matrixNextCycle[LENGTH][WIDTH];
 
         Pomme::ObjInstance* instanceGameScene;
+
+        GridEntity m_grid;
     };
 }

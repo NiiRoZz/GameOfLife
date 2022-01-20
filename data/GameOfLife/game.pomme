@@ -13,53 +13,21 @@ class GameScene
     {
         int nbAliveNeighbor = 0;
 
-        if (getCell(x+1,y+1))
-        {
-            nbAliveNeighbor = nbAliveNeighbor + 1;
-        };
-
-        if (getCell(x+1,y-1))
-        {
-            nbAliveNeighbor = nbAliveNeighbor + 1;
-        };
-
-        if (getCell(x-1,y+1))
-        {
-            nbAliveNeighbor = nbAliveNeighbor + 1;
-        };
-
-        if (getCell(x-1,y-1))
-        {
-            nbAliveNeighbor = nbAliveNeighbor + 1;
-        };
-
-        if (getCell(x,y-1))
-        {
-            nbAliveNeighbor = nbAliveNeighbor + 1;
-        };
-
-        if (getCell(x,y+1))
-        {
-            nbAliveNeighbor = nbAliveNeighbor + 1;
-        };
-
-        if (getCell(x+1,y))
-        {
-            nbAliveNeighbor = nbAliveNeighbor + 1;
-        };
-
-        if (getCell(x-1,y))
-        {
-            nbAliveNeighbor = nbAliveNeighbor + 1;
-        };
+        nbAliveNeighbor = nbAliveNeighbor + getCell(x+1,y+1);
+        nbAliveNeighbor = nbAliveNeighbor + getCell(x+1,y-1);
+        nbAliveNeighbor = nbAliveNeighbor + getCell(x-1,y+1);
+        nbAliveNeighbor = nbAliveNeighbor + getCell(x-1,y-1);
+        nbAliveNeighbor = nbAliveNeighbor + getCell(x,y-1);
+        nbAliveNeighbor = nbAliveNeighbor + getCell(x,y+1);
+        nbAliveNeighbor = nbAliveNeighbor + getCell(x+1,y);
+        nbAliveNeighbor = nbAliveNeighbor + getCell(x-1,y);
 
         return nbAliveNeighbor;
     };
 
     bool isAliveNextCycle(int x, int y)
     {
-        print(nbAliveNeighbor(x,y));
-        return ((nbAliveNeighbor(x,y) == 3) || (getCell(x,y) && (nbAliveNeighbor(x,y) == 2)));
+        return ((nbAliveNeighbor(x, y) == 3) || (getCell(x, y) && (nbAliveNeighbor(x, y) == 2)));
     };
 
     void update()
