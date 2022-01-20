@@ -9,8 +9,10 @@ namespace gol
     , m_game(game)
     , instanceGameScene(nullptr)
     , m_grid(*this, game.resources)
+    , m_stopAction("StopAction")
+    , m_stop(false)
     {
-        game.getWindow().setFramerateLimit(2u);
+        game.getWindow().setFramerateLimit(14u);
         game.getWindow().setVerticalSyncEnabled(false);
 
         setClearColor(gf::Color::Black);
@@ -23,6 +25,10 @@ namespace gol
         matrix[4][3]=true;
         matrix[3][3]=true;
         matrix[2][3]=true;
+
+        m_stopAction.addKeycodeKeyControl(gf::Keycode::Space);
+        m_stopAction.setInstantaneous();
+        addAction(m_stopAction);
 
         addHudEntity(m_grid);
     }
@@ -64,11 +70,22 @@ namespace gol
         }
     }
 
+    void GameScene::doHandleActions(gf::Window& window)
+    {
+        if (m_stopAction.isActive())
+        {
+            m_stop = !m_stop;
+        }
+    }
+
     void GameScene::doUpdate(gf::Time time)
     {
         gf::Scene::doUpdate(time);
 
-        m_game.vm.interpretMethodFunction(instanceGameScene, m_game.vm.getFunctionName("update"), {});
+        if (!m_stop)
+        {
+            m_game.vm.interpretMethodFunction(instanceGameScene, m_game.vm.getFunctionName("update"), {});
+        }
     }
 
     void GameScene::doShow()

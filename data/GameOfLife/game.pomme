@@ -32,14 +32,14 @@ class GameScene
 
     void update()
     {
-        int x = 1;
-        int y = 1;
+        int x = 0;
+        int y = 0;
 
-        while (x < 19)
+        while (x < 20)
         {
             y = 1;
 
-            while (y < 19)
+            while (y < 20)
             {
                 setNextCell(x, y, isAliveNextCycle(x, y));
 

@@ -3,6 +3,7 @@
 #include <gf/Scene.h>
 #include <gf/RenderTarget.h>
 #include <gf/RenderStates.h>
+#include <gf/Action.h>
 #include <Pomme/Object.h>
 
 #include "GridEntity.h"
@@ -28,6 +29,7 @@ namespace gol
         void makeIteration();
 
     protected:
+        virtual void doHandleActions(gf::Window& window);
         virtual void doUpdate(gf::Time time) override;
         virtual void doShow() override;
 
@@ -39,5 +41,9 @@ namespace gol
         Pomme::ObjInstance* instanceGameScene;
 
         GridEntity m_grid;
+
+        gf::Action m_stopAction;
+
+        bool m_stop;
     };
 }
